@@ -2,10 +2,8 @@ import numpy as np
 import time
 from flask import Flask, request, g
 from server.face_tool import FaceTool
-# from flask_cors import CORS
 
 app = Flask(__name__)
-# CORS(app)
 ft = FaceTool()
 
 @app.before_request
