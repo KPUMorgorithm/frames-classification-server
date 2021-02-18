@@ -11,6 +11,8 @@ ft = FaceTool()
 bp = Blueprint('match', __name__, url_prefix='/match')
 
 model = load_model('server/mask_detector.model')
+net = cv2.dnn.readNet('server/face_detector/deploy.prototxt','server/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
+
 @bp.route('/', methods=['POST'], strict_slashes=False)
 def match():
     result = []
@@ -51,5 +53,12 @@ def match():
         print(name,"Mask:",mask,"No Mask: ",withoutMask)
         # Face Mask Detection 정제과정 끝
     '''
+
+    blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300),(104.0, 177.0, 123.0)) #프레임을 blob 화
+    net.setInput(blob)
+    detections = net.forward()
+
+
+
 
     return {'data': result}, 200
