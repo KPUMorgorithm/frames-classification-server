@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
+from server.tools.face_detector import FaceDetector
 import face_recognition
 
 from tensorflow.keras.models import load_model
@@ -9,10 +10,12 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 ft = FaceTool()
+fd = FaceDetector('server/face_detector/deploy.prototxt',
+    'server/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
+
 bp = Blueprint('match', __name__, url_prefix='/match')
 
 model = load_model('server/mask_detector.model')
-net = cv2.dnn.readNet('server/face_detector/deploy.prototxt','server/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
 
 @bp.route('/', methods=['POST'], strict_slashes=False)
 def match():
@@ -55,16 +58,13 @@ def match():
         # Face Mask Detection 정제과정 끝
     '''
 
-    blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300),(104.0, 177.0, 123.0)) #프레임을 blob 화
-    net.setInput(blob)
-    detections = net.forward()
+    detections = fd.GetDetectionsFromFrame(frame)
+
 
     (h, w) = np.shape(frame)[:2]
 
-    for i in range(0, detections.shape[2]):
-        confidence = detections[0,0,i,2]
-
-        if confidence < 0.5: #임계점 이하일시 continue
+    for i in fd.NumberOfDetection(detections):
+        if fd.GetConfidence(detections,i) < 0.5: #임계점 이하일시 continue
             continue
         
         #mask detection
