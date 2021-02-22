@@ -3,19 +3,16 @@ import cv2
 from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
 from server.tools.face_detector import FaceDetector
+from server.tools.mask_detector import MaskDetector
 import face_recognition
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-
 ft = FaceTool()
-fd = FaceDetector('server/face_detector/deploy.prototxt',
-    'server/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
+fd = FaceDetector('server/tools/face_detector/deploy.prototxt',
+    'server/tools/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
+md = MaskDetector('server/tools/mask_detector.model')
 
 bp = Blueprint('match', __name__, url_prefix='/match')
 
-model = load_model('server/mask_detector.model')
 
 @bp.route('/', methods=['POST'], strict_slashes=False)
 def match():
@@ -31,66 +28,22 @@ def match():
         print(name, face_distance)
         result.append((name, face_location))
 
-        
-        # Face Mask Detection 정제과정
-        (h, w) = np.shape(frame)[:2]
-        (top, right, bottom, left) = face_location
-        top = max(0,top)
-        bottom = min(h-1,bottom)
-        left = max(0,left)
-        right = min(w-1,right)
-
-        face = frame[top:bottom,left:right]
-        face = cv2.cvtColor(face,cv2.COLOR_BGR2RGB)
-        face = cv2.resize(face, (224, 224))
-        face = img_to_array(face)
-        face = preprocess_input(face)
-        face = np.expand_dims(face, axis=0)
-
-        
-        (mask,withoutMask) = model.predict(face)[0]
-        if mask>withoutMask:
-            print("Mask")
-        else:
-            print("No Mask")
-
-        print(name,"Mask:",mask,"No Mask: ",withoutMask)
-        # Face Mask Detection 정제과정 끝
     '''
 
-    detections = fd.GetDetectionsFromFrame(frame)
 
-
-    (h, w) = np.shape(frame)[:2]
-
-    for i in fd.NumberOfDetection(detections):
-        if fd.GetConfidence(detections,i) < 0.5: #임계점 이하일시 continue
+    for detection in fd.GetDetectionsFromFrame(frame):
+    
+        if fd.GetConfidence(detection) < 0.5: #임계점 이하일시 continue
             continue
         
-        #mask detection
-        face_location = detections[0,0,i,3:7] * np.array([w,h,w,h])
-        (left, top, right, bottom) = face_location.astype("int")
-        top = max(0,top)
-        bottom = min(h-1,bottom)
-        left = max(0,left)
-        right = min(w-1,right)        
-
-        print(top,bottom,left,right)
-
-        face = frame[top:bottom,left:right]
-        face = cv2.cvtColor(face,cv2.COLOR_BGR2RGB)
-        face = cv2.resize(face, (224, 224))
-        face = img_to_array(face)
-        face = preprocess_input(face)
-        face = np.expand_dims(face, axis=0)
-
-        (mask,withoutMask) = model.predict(face)[0]
+        (mask,withoutMask) = md.MaskDetection(fd.GetFaceLocationForMD(detection, frame))
+        
         if mask>withoutMask:
             print("Mask")
             # --- TODO : 클라이언트에 마스크를 벗어달라는 메세지 출력
 
         else:
             print("No Mask")
-            # --- TODO :         
+            # --- TODO : 클라이언트에서 열 측정과 face recognition 결과 출력
 
     return {'data': result}, 200
