@@ -28,7 +28,6 @@ class FaceDetector:
     @staticmethod
     def GetFaceLocation(detection, frame):
         (height,width) = np.shape(frame)[:2]
-        print(height,width)
         faceLocation  = detection[3:7] * np.array([width,height,width,height])
         (left, top, right, bottom) = faceLocation.astype("int")
         top = max(0,top)
@@ -36,12 +35,14 @@ class FaceDetector:
         left = max(0,left)
         right = min(width-1,right)        
 
-        return frame[top:bottom,left:right]
+        return (left,top,right,bottom)
 
     @staticmethod    
     def GetFaceLocationForMD(detection, frame):
 
-        face = FaceDetector.GetFaceLocation(detection,frame)
+        faceLocation = FaceDetector.GetFaceLocation(detection,frame)
+        (left, top, right, bottom) = faceLocation
+        face = frame[top:bottom,left:right]
         face = cv2.cvtColor(face,cv2.COLOR_BGR2RGB)
         face = cv2.resize(face, (224, 224))
 
