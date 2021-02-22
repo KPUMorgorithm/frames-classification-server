@@ -87,8 +87,10 @@ def match():
         (mask,withoutMask) = model.predict(face)[0]
         if mask>withoutMask:
             print("Mask")
+            # --- TODO : 클라이언트에 마스크를 벗어달라는 메세지 출력
+
         else:
             print("No Mask")
-        
+            # --- TODO :         
 
     return {'data': result}, 200
