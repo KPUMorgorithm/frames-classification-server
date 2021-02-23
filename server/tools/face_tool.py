@@ -9,7 +9,7 @@ class FaceTool():
         classes = glob.glob(path+"*")
         for label in classes:
             imgs = glob.glob(label+"/*")
-            label = label.split("/")[-1]
+            label = label.split("\\")[-1]
             print(label)
             for img in imgs:
                 self.registerImage(label, img)
