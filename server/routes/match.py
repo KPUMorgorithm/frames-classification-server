@@ -20,7 +20,7 @@ def match():
     result = []
     nparr = np.frombuffer(request.data, np.uint8) # 리퀘스트로 버퍼 읽기
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # 버퍼 -> Mat
-    
+    #frame = frame[:, :, ::-1]
     '''  
     (face_locations, face_encodings) = ft.feature(frame) # FaceTool로 얼굴 위치랑 랜드마크 추출 
 
@@ -51,15 +51,14 @@ def match():
             # Issue: face recognition으로 로케이션 뽑을때랑 사람찾는거로 뽑은 로케이션이랑 살짝 다름
             # 그거때문인지 unknown으로 계속 찾게됨
             # 여기서 아예 face location에 있는 모델을 쓰면 부하가 조금 늘어날듯
-            '''
-            rgb_frame = frame[:, :, ::-1]
-            (left,top,right,bottom) = fd.GetFaceLocation(detection,rgb_frame)
+            
+            (left,top,right,bottom) = fd.GetFaceLocation(detection,frame)
             faceLocation = []
             faceLocation.append((top,right,bottom,left))
             faceEncoding = face_recognition.face_encodings(frame,faceLocation)[0]
             
             (name, face_distance) = ft.match(faceEncoding)
-            print(name, face_distance)
-            result.append((name,(left,top,right,bottom)))
-            '''
+            print(name, face_distance)                      
+            result.append((name,(top.item(),right.item(),bottom.item(),left.item())))
+            
     return {'data': result}, 200
