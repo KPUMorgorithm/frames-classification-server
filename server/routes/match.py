@@ -29,7 +29,7 @@ def match():
         
         if mask>withoutMask:
             print("Mask")
-            # --- TODO : 클라이언트에 마스크를 벗어달라는 메세지 출력
+            result.append((1, None, None))
 
         else:
             print("No Mask")
