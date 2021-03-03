@@ -39,10 +39,9 @@ def match():
             faceEncoding = face_encodings(frame,faceLocation)[0]
             
             (name, face_distance) = ft.match(faceEncoding)
-            #print(name, face_distance)                      
             result.append(( 0,
                             name,
-                            (top.item(),right.item(),bottom.item(),left.item())
+                            (top,right,bottom,left)
                           ))
             
     return {'data': result}, 200
