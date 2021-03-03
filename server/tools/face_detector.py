@@ -30,10 +30,10 @@ class FaceDetector:
         (height,width) = np.shape(frame)[:2]
         faceLocation  = detection[3:7] * np.array([width,height,width,height])
         (left, top, right, bottom) = faceLocation.astype("int")
-        top = max(0,top)
-        bottom = min(height-1,bottom)
-        left = max(0,left)
-        right = min(width-1,right)        
+        top = max(0,top.item())
+        bottom = min(height-1,bottom.item())
+        left = max(0,left.item())
+        right = min(width-1,right.item())        
 
         return (left,top,right,bottom)
 
