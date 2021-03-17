@@ -2,7 +2,9 @@ import pymysql
 from pymysql.connections import Connection
 from datetime import datetime
 
-class sql:
+#mySQL = sql(user='root', passwd='1234', host='127.0.0.1', db ='frames')
+
+class MySQL:
 
     def __init__(self, user, passwd, host, db, charset='utf8'):
         self.__user = user
@@ -41,8 +43,4 @@ class sql:
         
         finally:
             self.__disconnect()
-
-        
-    
-#mySQL = sql(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 
