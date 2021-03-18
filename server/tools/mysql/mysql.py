@@ -3,6 +3,8 @@ from pymysql.connections import Connection
 from datetime import datetime
 from threading import Thread
 import time
+from server.tools.mysql.singletone import Singleton
+from server.tools.mysql.checklist import CheckList
 #mySQL = sql(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 
 class MySQL:
@@ -25,10 +27,13 @@ class MySQL:
                             host = self.__host,
                             db = self.__db,
                             charset = self.__charset)
+            
+            print("connect()")
 
-    def __disconnect(self):
+    def disconnect(self):
         if self.__conn is not None:
             self.__conn.close()
+            print("disconnected()")
     
     #TODO: issubset 이 전부 True로 들어가짐
     def __isNotList(self, memberNum):
@@ -66,15 +71,16 @@ class MySQL:
             print("ERROR: INSERT QUERY")
 
 
-    def insertStatus(self, state, facilityNum, memberNum, temperature, regData= datetime.now(), tableName = "status"):
-        print("insertStatus")
-        if self.__isNotList(memberNum):
-            
-            self.__connect()
-
-            self.__insertStatus(state,facilityNum, memberNum, temperature, regData, tableName)
-
-            self.__addList(memberNum)
+    def insertStatus(self, state, facilityNum, memberNum, temperature, tableName = "status"):
         
-            self.__disconnect()
+        if self.__checkList.isNotList(memberNum):
+            
+            self.__insertStatus(state,facilityNum, memberNum, temperature, datetime.now(), tableName)
+            print("insertStatus()")
+            self.__checkList.addList(memberNum)
+            print("addList")
 
+
+
+class SingletonSQL(MySQL, Singleton):
+    pass

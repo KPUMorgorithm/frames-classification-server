@@ -5,9 +5,8 @@ from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
 from server.tools.face_detector import FaceDetector
 from server.tools.mask_detector import MaskDetector
-from server.tools.mysql.mysql import MySQL
+from server.tools.mysql.mysql import  SingletonSQL
 
-sql = MySQL(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 ft = FaceTool()
 fd = FaceDetector('server/tools/face_detector/deploy.prototxt',
     'server/tools/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
@@ -17,7 +16,10 @@ bp = Blueprint('match', __name__, url_prefix='/match')
 
 @bp.route('/', methods=['POST'], strict_slashes=False)
 
+
 def match():
+    sql = SingletonSQL.instance()
+
     result = []
     nparr = np.frombuffer(request.data, np.uint8) # 리퀘스트로 버퍼 읽기
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # 버퍼 -> Mat
