@@ -5,9 +5,8 @@ from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
 from server.tools.face_detector import FaceDetector
 from server.tools.mask_detector import MaskDetector
-from server.tools.mysql.mysql import MySQL
+from server.tools.mysql.mysql import  SingletonSQL
 
-sql = MySQL(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 ft = FaceTool()
 fd = FaceDetector('server/tools/face_detector/deploy.prototxt',
     'server/tools/face_detector/res10_300x300_ssd_iter_140000.caffemodel')
@@ -17,7 +16,10 @@ bp = Blueprint('match', __name__, url_prefix='/match')
 
 @bp.route('/', methods=['POST'], strict_slashes=False)
 
+
 def match():
+    sql = SingletonSQL.instance()
+
     result = []
     nparr = np.frombuffer(request.data, np.uint8) # 리퀘스트로 버퍼 읽기
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # 버퍼 -> Mat
@@ -41,7 +43,7 @@ def match():
             faceEncoding = face_encodings(frame,faceLocation)[0]
             
             # 로그 기록
-            # TODO: 건물 번호, 멤버 번호 매핑 테이블이 있어야 함
+            # TODO: 건물 번호, 멤버 번호(check리스트로) 매핑 테이블이 있어야 함
             # TODO: state 0,1 구분 있어야 함
             # TODO: 온도 데이터 받아야 함
             sql.insertStatus(state=1, facilityNum=1, memberNum=1, temperature=36.5)
