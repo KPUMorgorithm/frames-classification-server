@@ -1,25 +1,26 @@
 import pymysql
 from pymysql.connections import Connection
 from datetime import datetime
-from threading import Thread
-import time
+
 from server.tools.mysql.singletone import Singleton
 from server.tools.mysql.checklist import CheckList
+
 #mySQL = sql(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 
 class MySQL:
-
-    def __init__(self, user, passwd, host, db, charset='utf8', cooldown=60):
+    
+    def __init__(self, user, passwd, host, db, charset='utf8'):
         self.__user = user
         self.__passwd = passwd
         self.__host = host
         self.__db = db
         self.__charset = charset
-        self.__cooldown = cooldown
         self.__conn : Connection = None
-        self.__checkList = set()
+        self.__checkList = CheckList()
 
-    def __connect(self):
+        self.connect()
+
+    def connect(self):
         if self.__conn is None:
             self.__conn = pymysql.connect(
                             user = self.__user, 
@@ -35,26 +36,6 @@ class MySQL:
             self.__conn.close()
             print("disconnected()")
     
-    #TODO: issubset 이 전부 True로 들어가짐
-    def __isNotList(self, memberNum):
-
-        if self.__checkList.issubset({memberNum}):
-            print("issubset")
-            return False
-        print("notsubset")
-        return True
-
-    #TODO: __deleteList() argument after * must be an iterable, not int
-    def __deleteList(self, memberNum):
-        print("타이머 시작")
-        time.sleep(self.__cooldown)
-        self.__checkList.discard(memberNum)
-        print("삭제 완료")
-
-    def __addList(self, memberNum):
-        self.__checkList.add(memberNum)
-        th = Thread(target=self.__deleteList, args=(memberNum))
-        th.start()
 
     def __insertStatus(self, state, facilityNum, memberNum, temperature, regData, tableName):
         try:    
