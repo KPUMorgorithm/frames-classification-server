@@ -43,7 +43,7 @@ def match():
             faceEncoding = face_encodings(frame,faceLocation)[0]
             
             # 로그 기록
-            # TODO: 건물 번호, 멤버 번호 매핑 테이블이 있어야 함
+            # TODO: 건물 번호, 멤버 번호(check리스트로) 매핑 테이블이 있어야 함
             # TODO: state 0,1 구분 있어야 함
             # TODO: 온도 데이터 받아야 함
             sql.insertStatus(state=1, facilityNum=1, memberNum=1, temperature=36.5)
