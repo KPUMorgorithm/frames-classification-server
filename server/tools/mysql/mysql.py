@@ -48,8 +48,8 @@ class MySQL:
             """
             cursor.execute(query)
             self.__conn.commit()
-        except:
-            print("ERROR: INSERT QUERY")
+        except Exception as e:
+            print("ERROR: INSERT QUERY", e)
 
 
     def insertStatus(self, state, facilityNum, memberNum, temperature, tableName = "status"):
