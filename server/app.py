@@ -2,6 +2,7 @@ from flask import Flask, g
 import time
 
 from .routes import match
+from .routes import addLog
 
 from server.tools.mysql.mysql import SingletonSQL
 
@@ -10,6 +11,7 @@ SingletonSQL.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irko
 
 app = Flask(__name__)
 app.register_blueprint(match.bp)
+app.register_blueprint(addLog.bp)
 
 @app.before_request
 def before_request():
