@@ -66,6 +66,7 @@ class FaceList :
             name = directoryPath.split("\\")[-1]
             for path in imgPaths:
                 self.addImage(name,path)
+            print(f"{imgPaths} 완료")
 
 # f = FaceList(3,"faceData")
 # f.addDefaultData()
