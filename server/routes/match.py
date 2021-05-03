@@ -5,6 +5,7 @@ from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
 from server.tools.face_detector import FaceDetector
 from server.tools.mask_detector import MaskDetector
+from server.tools.mysql.mysql import  SingletonSQL
 
 ft = FaceTool()
 fd = FaceDetector('server/tools/face_detector/deploy.prototxt',
@@ -16,12 +17,16 @@ bp = Blueprint('match', __name__, url_prefix='/match')
 @bp.route('/', methods=['POST'], strict_slashes=False)
 def match():
 
+    sql = SingletonSQL.instance()
     result = []
-    nparr = np.frombuffer(request.data, np.uint8) # 리퀘스트로 버퍼 읽기
+    nparr = np.fromstring(request.files['frame'].read(), np.uint8) # 리퀘스트로 버퍼 읽기
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # 버퍼 -> Mat
+    tp = request.form["temperature"] 
+    fNum = request.form["facilityNum"]
+    state = request.form["state"]
 
     for detection in fd.GetDetectionsFromFrame(frame):
-    
+        
         if fd.GetConfidence(detection) < 0.5: #임계점 이하일시 continue
             continue
         
@@ -29,7 +34,7 @@ def match():
         
         if mask>withoutMask:
             print("Mask")
-            result.append((1, None, None))
+            result.append((False, None))
 
         else:
             print("No Mask")
@@ -39,9 +44,14 @@ def match():
             faceEncoding = face_encodings(frame,faceLocation)[0]
             
             (name, face_distance) = ft.match(faceEncoding)
-            result.append(( 0,
+            result.append(( True,
                             name,
-                            (top,right,bottom,left)
                           ))
+                          
+            # sql.insertStatus(state=state, facilityNum=fNum, memberNum=1, temperature=tp)
+            sql.insertStatus(state=0, facilityNum=3, memberNum=1, temperature=tp)
+       
+            print(f"tp = {tp}, fNum = {fNum}, state = {state}, name = {name}")
+
             
     return {'data': result}, 200
