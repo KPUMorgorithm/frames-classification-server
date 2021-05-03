@@ -1,6 +1,6 @@
 import pymysql
 from pymysql.connections import Connection
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from server.tools.mysql.singletone import Singleton
 from server.tools.mysql.checklist import CheckList
@@ -40,7 +40,25 @@ class MySQL:
     def __insertStatus(self, state, facilityNum, memberNum, temperature, regData, tableName):
         try:    
             cursor = self.__conn.cursor()
-        
+
+            query = f"""
+            set @cnt=0
+            """
+            cursor.execute(query)
+            self.__conn.commit()
+
+            query = f"""
+            UPDATE {tableName} set {tableName}.statusnum=@cnt:=@cnt+1
+            """
+            cursor.execute(query)
+            self.__conn.commit()
+            
+            query = f"""
+            ALTER TABLE {tableName} AUTO_INCREMENT = 1
+            """
+            cursor.execute(query)
+            self.__conn.commit()
+
             # column: regdate, state, facility_bno, member_mno, temperature
             query = f"""
             INSERT INTO {tableName} (regdate, state, facility_bno, member_mno, temperature) 
@@ -48,16 +66,21 @@ class MySQL:
             """
             cursor.execute(query)
             self.__conn.commit()
+
         except Exception as e:
             print("ERROR: INSERT QUERY", e)
 
 
     def insertStatus(self, state, facilityNum, memberNum, temperature, tableName = "status"):
-        
+        print(self.__checkList.isNotList(memberNum))
+        print(facilityNum)
         if self.__checkList.isNotList(memberNum):
+        # if True:
             
-            self.__insertStatus(state,facilityNum, memberNum, temperature, datetime.now(), tableName)
+            print(f"state:{state}dddddddddddddd")
+            self.__insertStatus(state,facilityNum, memberNum, temperature, datetime.now() + timedelta(seconds=10), tableName)
             print("insertStatus()")
+            print()
             self.__checkList.addList(memberNum)
             print("addList")
 
