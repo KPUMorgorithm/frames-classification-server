@@ -6,7 +6,7 @@ from threading import Thread
 
 class CheckList:
 
-    def __init__(self, cooldown = 60):
+    def __init__(self, cooldown = 5):
         self.__checkList = set()
         self.__cooldown = cooldown
 
