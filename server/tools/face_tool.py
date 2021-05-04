@@ -8,7 +8,6 @@ class FaceTool():
     def __init__(self):
         self.faceList = FaceList(3,"server/tools/faceData")
 
-        # TODO: Proxy Pattern 으로 바꿔야함
         self.contextFaceList = self.faceList.getListByQueue()
     
     @staticmethod
