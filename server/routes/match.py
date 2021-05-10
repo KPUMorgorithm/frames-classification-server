@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from face_recognition.api import face_encodings
 import numpy as np
 import cv2
@@ -53,7 +54,7 @@ def match():
                           
             # sql.insertStatus(state=state, facilityNum=fNum, memberNum=1, temperature=tp)
             checklist: MemberDict = Checklist.instance()
-            checklist.check(1, ifNotExists=lambda: db.status.insertStatus(state=0, facilityNum=3, memberNum=1, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)))
+            checklist.check(1, ifNotExists=lambda: db.status.insertStatus(state=0, facilityNum=3, memberNum=1, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
        
             print(f"tp = {tp}, fNum = {fNum}, state = {state}, name = {name}")
 
