@@ -8,7 +8,6 @@ from server.db.db import DB
 from server.scheduler.mainScheduler import MainScheduler, Scheduler, Task
 from server.store.checklistStore import Checklist, MemberDict
 
-#TODO: SQL Disconnect 타이밍을 모르겠음
 DB.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irkoowji.ap-northeast-2.rds.amazonaws.com', db ='frames')
 
 checklist : MemberDict = Checklist.instance()

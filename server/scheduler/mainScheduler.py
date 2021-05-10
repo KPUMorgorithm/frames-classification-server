@@ -15,7 +15,7 @@ class Scheduler:
         self.shutdown()
 
     def shutdown(self):
-        self.sched.shutdown()
+        self.__sched.shutdown()
 
     def __tick(self):
         for task in self.__tasks:
