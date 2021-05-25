@@ -1,6 +1,4 @@
 from datetime import datetime, timedelta
-import numpy as np
-import cv2
 from flask import request, Blueprint
 from server.tools.face_tool import FaceTool
 
@@ -25,10 +23,8 @@ def match():
     fNum = data["facilityNum"]
     state = data["state"]
 
-        
-    print(landmark)
     name, _ = ft.match(landmark)
-    result.append((name,))
+    result.append(name)
     # sql.insertStatus(state=state, facilityNum=fNum, memberNum=1, temperature=tp)
     checklist: MemberDict = Checklist.instance()
     checklist.check(1, ifNotExists=lambda: db.status.insertStatus(state=0, facilityNum=3, memberNum=1, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)

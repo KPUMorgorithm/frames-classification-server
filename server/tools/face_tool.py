@@ -29,5 +29,4 @@ class FaceTool():
         return name, float(face_distances[best_match_index])
 
     def __convertListLandmark(self, listLandmark):
-        print(listLandmark)
         return np.array(listLandmark)
