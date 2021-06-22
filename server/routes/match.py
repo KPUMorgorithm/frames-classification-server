@@ -15,6 +15,10 @@ ft = FaceTool()
 md = MaskDetector('server/tools/mask_detector.model')
 bp = Blueprint('match', __name__, url_prefix='/match')
 
+checkStack = {
+    # fNum+state : count
+}
+
 @bp.route('/', methods=['POST'], strict_slashes=False)
 def match():
 
@@ -41,8 +45,22 @@ def match():
         name = data["name"]
         mno = data["mno"]
 
-        result.append(False)
-        result.append(name)
+        result.append(False) # masked
+        result.append(name) # name
+        if checkStack.get(f'{fNum}{state}') is None:
+            checkStack[f'{fNum}{state}']["val"] = 1
+            checkStack[f'{fNum}{state}']["mno"] = mno
+        else:
+            if checkStack[f'{fNum}{state}']["mno"] == mno:
+                checkStack[f'{fNum}{state}']["val"] += 1
+            else:
+                del checkStack[f'{fNum}{state}']
+
+        if checkStack.get(f'{fNum}{state}') is None and checkStack[f'{fNum}{state}']["val"] >= 3:
+            del checkStack[f'{fNum}{state}']
+            result.append(True) # display
+        else:
+            result.append(False) # display
 
         checklist: MemberDict = Checklist.instance()
         checklist.check(memberNum=mno, ifNotExists=lambda: db.status.insertStatus(state=state, facilityNum=fNum, memberNum=mno, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
