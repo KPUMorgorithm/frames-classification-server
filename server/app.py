@@ -1,14 +1,15 @@
 from flask import Flask, g
 import time
 
+from server.db.db import DB
+DB.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irkoowji.ap-northeast-2.rds.amazonaws.com', db ='frames')
+# DB.instance(user='admin', passwd='kpu123456!', host='localhost', db ='frames')
+
 from server.routes import match
 from server.routes import addLog
 
-from server.db.db import DB
 from server.scheduler.mainScheduler import MainScheduler, Scheduler, Task
 from server.store.checklistStore import Checklist, MemberDict
-
-DB.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irkoowji.ap-northeast-2.rds.amazonaws.com', db ='frames')
 
 checklist : MemberDict = Checklist.instance()
 
