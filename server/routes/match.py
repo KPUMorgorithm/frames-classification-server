@@ -35,15 +35,18 @@ def match():
     else:
         landmark = ft.feature(face)
 
-        name, distance = ft.match(landmark)
+        data, distance = ft.match(landmark)
         print(f"distance: {distance}")
-        
+
+        name = data["name"]
+        mno = data["mno"]
+
         result.append(False)
         result.append(name)
 
         checklist: MemberDict = Checklist.instance()
-        checklist.check(1, ifNotExists=lambda: db.status.insertStatus(state=0, facilityNum=3, memberNum=1, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
+        checklist.check(memberNum=mno, ifNotExists=lambda: db.status.insertStatus(state=state, facilityNum=fNum, memberNum=mno, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
 
         print(f"tp = {tp}, fNum = {fNum}, state = {state}, name = {name}")
 
-    return {'data': result}, 200
+    return {'data': result}, 200 # 데이터 반환하는거 협의 필요함 지금은 상태 + name
