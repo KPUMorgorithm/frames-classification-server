@@ -8,7 +8,7 @@ class FaceTool():
     def __init__(self):
         self.faceList = FaceList(3,"server/tools/faceData")
 
-        self.contextFaceList = self.faceList.getListByQueue()
+        self.contextFaceList = self.faceList.getFaceDataList()
     
     @staticmethod
     def feature(frame):
@@ -24,17 +24,17 @@ class FaceTool():
         return face_encodings
 
     def match(self, landmark):
-        name = "Unknown"
+        data = {"mno": None, "name": "Unknown"}
 
         if landmark is None:
-            return name, None
+            return data, None
 
-        face_distances = face_recognition.face_distance(list(map(lambda x: x[1], self.contextFaceList)), self.__convertListLandmark(landmark))
+        face_distances = face_recognition.face_distance(list(map(lambda x: x[1]["faceEncoding"], self.contextFaceList)), self.__convertListLandmark(landmark))
         best_match_index = np.argmin(face_distances)
         if face_distances[best_match_index] <= 0.5:
-            name = self.contextFaceList[best_match_index][0]
+            data = self.contextFaceList[best_match_index][1]
         
-        return name, float(face_distances[best_match_index])
+        return data, float(face_distances[best_match_index])
 
     def __convertListLandmark(self, listLandmark):
         return np.array(listLandmark)

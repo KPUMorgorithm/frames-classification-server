@@ -3,6 +3,7 @@ from pymysql.connections import Connection
 
 from server.type.singletone import Singleton
 from server.db.repository.status import StatusRepository
+from server.db.repository.member import MemberRepository
 
 #mySQL = sql(user='root', passwd='1234', host='127.0.0.1', db ='frames')
 class MySQL:
@@ -14,6 +15,7 @@ class MySQL:
         self.__charset = charset
         self.__conn : Connection = None
         self.status = StatusRepository(self)
+        self.member = MemberRepository(self)
 
         self.connect()
     
