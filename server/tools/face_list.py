@@ -14,6 +14,7 @@ class FaceList :
         self.__queueSize = queueSize
         self.__pickleName = pickleName
         self.__faceData: dict = self.loadDict()
+        print(self.__faceData)
         self.syncServer()
     
     def downloadImage(self, image):
@@ -31,6 +32,9 @@ class FaceList :
     def addImage(self, mno, image):
         try:
             imgPath = self.downloadImage(image)
+            if imgPath is None:
+                print("image not exists: %s"%(mno))
+                return
             img = face_recognition.load_image_file(imgPath)
             os.remove(imgPath)
             faceEncoding = face_recognition.face_encodings(img)[0]
@@ -92,7 +96,7 @@ class FaceList :
             mno = member["mno"]
             if mno not in self.__faceData:
                 self.__faceData[mno] = copy.deepcopy(member)
-                del self.__faceData[mno]["images"]
+                self.__faceData[mno]["images"] = []
                 for image in member["images"]:
                     self.addImage(mno, image)
                 continue
