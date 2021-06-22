@@ -34,9 +34,7 @@ class MemberRepository:
 
         members = []
         for member in _members:
-            print(member)
             _member_images = self.getMemberImages(mno=member[0])
-            print(_member_images)
             images = []
             for member_image in _member_images:
                 images.append({
