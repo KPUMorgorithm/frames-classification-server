@@ -14,7 +14,6 @@ class FaceList :
         self.__queueSize = queueSize
         self.__pickleName = pickleName
         self.__faceData: dict = self.loadDict()
-        print(self.__faceData)
         self.syncServer()
     
     def downloadImage(self, image):
