@@ -11,7 +11,7 @@ from server.tools.mask_detector import MaskDetector
 import numpy as np
 import cv2
 
-ft = FaceTool()
+ft = FaceTool.instance()
 md = MaskDetector('server/tools/mask_detector.model')
 bp = Blueprint('match', __name__, url_prefix='/match')
 
@@ -35,6 +35,7 @@ def match():
     if md.isMasked(face):
         result.append(True)
         result.append("")
+        result.append(True)
 
     else:
         landmark = ft.feature(face)
@@ -47,23 +48,29 @@ def match():
 
         result.append(False) # masked
         result.append(name) # name
+
+        print("before!!!!")
+        print(checkStack)
+
         if checkStack.get(f'{fNum}{state}') is None:
-            checkStack[f'{fNum}{state}']["val"] = 1
-            checkStack[f'{fNum}{state}']["mno"] = mno
+            checkStack[f'{fNum}{state}'] = {"val": 1, "mno": mno}
         else:
             if checkStack[f'{fNum}{state}']["mno"] == mno:
                 checkStack[f'{fNum}{state}']["val"] += 1
             else:
-                del checkStack[f'{fNum}{state}']
+                checkStack[f'{fNum}{state}'] = {"val": 1, "mno": mno}
 
-        if checkStack.get(f'{fNum}{state}') is None and checkStack[f'{fNum}{state}']["val"] >= 3:
+        if checkStack.get(f'{fNum}{state}') is not None and checkStack[f'{fNum}{state}']["val"] >= 3:
             del checkStack[f'{fNum}{state}']
             result.append(True) # display
+            checklist: MemberDict = Checklist.instance()
+            checklist.check(memberNum=mno, ifNotExists=lambda: db.status.insertStatus(state=state, facilityNum=fNum, memberNum=mno, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
+
         else:
             result.append(False) # display
 
-        checklist: MemberDict = Checklist.instance()
-        checklist.check(memberNum=mno, ifNotExists=lambda: db.status.insertStatus(state=state, facilityNum=fNum, memberNum=mno, temperature=tp, regdate=datetime.now() + timedelta(seconds=10)),ifExists=None)
+        print("after!!!!")
+        print(checkStack)
 
         print(f"tp = {tp}, fNum = {fNum}, state = {state}, name = {name}")
 
