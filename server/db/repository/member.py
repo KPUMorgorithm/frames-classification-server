@@ -52,5 +52,5 @@ class MemberRepository:
                 "images": images
             })
 
-        print(members)
+        # print(members)
         return members

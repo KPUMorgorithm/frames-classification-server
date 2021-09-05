@@ -5,7 +5,8 @@ import time
 # os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/bin")
 
 from server.db.db import DB
-DB.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irkoowji.ap-northeast-2.rds.amazonaws.com', db ='frames')
+# DB.instance(user='admin', passwd='kpu123456!', host='framesdb.cys6irkoowji.ap-northeast-2.rds.amazonaws.com', db ='frames')
+DB.instance(user='root', passwd='password', host='13.209.16.214', db ='frames')
 # DB.instance(user='admin', passwd='kpu123456!', host='localhost', db ='frames')
 
 from server.tools.face_tool import FaceTool
