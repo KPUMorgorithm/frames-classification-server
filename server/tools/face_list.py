@@ -21,7 +21,7 @@ class FaceList :
         uuid = image["uuid"]
         name = image["name"]
         filename = f'{uuid}_{name}'
-        url = f'http://dowo.pw/image/{path}/{filename}'
+        url = f'http://eks-clb-861425180.ap-northeast-2.elb.amazonaws.com/image/{path}/{filename}'
         r = requests.get(url, stream=True)
         if r.status_code == 200:
             with open("server/resources/tmp/"+filename, 'wb') as f:
