@@ -16,6 +16,7 @@ class MemberRepository:
 
         except Exception as e:
             traceback.print_exc()
+            return []
             
     def getMemberImages(self, mno):
         try:    
@@ -28,6 +29,7 @@ class MemberRepository:
 
         except Exception as e:
             traceback.print_exc()
+            return []
 
     def getMembersWithImages(self):
         _members = self.getMembers()
@@ -49,4 +51,6 @@ class MemberRepository:
                 "phone": member[2],
                 "images": images
             })
+
+        # print(members)
         return members
