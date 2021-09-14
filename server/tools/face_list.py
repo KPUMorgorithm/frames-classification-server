@@ -81,6 +81,7 @@ class FaceList :
         members = db.member.getMembersWithImages()
 
         # 서버에 존재하지 않는 멤버 데이터 제거
+        delList = []
         for mno in self.__faceData.keys():
             exists = False
             for member in members:
@@ -88,7 +89,11 @@ class FaceList :
                     exists = True
                     break
             if not exists:
-                del self.__faceData[mno]
+                delList.append(mno)
+
+        delList.reverse()
+        for mno in delList:
+            del self.__faceData[mno]
 
         # 메모리에 존재하지 않는 멤버 데이터 추가 
         for member in members:
