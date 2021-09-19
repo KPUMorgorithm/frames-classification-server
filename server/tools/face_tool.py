@@ -27,16 +27,19 @@ class _FaceTool():
     def sync(self):
         print("SYNC")
         self.faceList.syncServer()
+        self.contextFaceList = self.faceList.getFaceDataList()
 
     def match(self, landmark):
         data = {"mno": 0, "name": "Unknown"}
 
         if landmark is None:
-            return data, None
+            return data, False
+        
         encodings = list(map(lambda x: x[1]["faceEncoding"] if x[1].get("faceEncoding") is not None else np.zeros(128, dtype=np.float64), self.contextFaceList))
         face_distances = face_recognition.face_distance(encodings, self.__convertListLandmark(landmark))
         best_match_index = np.argmin(face_distances)
-        if face_distances[best_match_index] <= 0.5:
+        if face_distances[best_match_index] <= 0.35:
+            print(face_distances[best_match_index])
             data = self.contextFaceList[best_match_index][1]
         
         return data, float(face_distances[best_match_index])
