@@ -21,7 +21,8 @@ class FaceList :
         uuid = image["uuid"]
         name = image["name"]
         filename = f'{uuid}_{name}'
-        url = f'http://eks-clb-861425180.ap-northeast-2.elb.amazonaws.com/image/{path}/{filename}'
+        # url = f'http://ec2-13-209-182-117.ap-northeast-2.compute.amazonaws.com/image/{path}/{filename}'
+        url = f'http://13.209.182.117:8085/image/{path}/{filename}'
         r = requests.get(url, stream=True)
         if r.status_code == 200:
             with open("server/resources/tmp/"+filename, 'wb') as f:
@@ -81,6 +82,7 @@ class FaceList :
         members = db.member.getMembersWithImages()
 
         # 서버에 존재하지 않는 멤버 데이터 제거
+        delList = []
         for mno in self.__faceData.keys():
             exists = False
             for member in members:
@@ -88,7 +90,11 @@ class FaceList :
                     exists = True
                     break
             if not exists:
-                del self.__faceData[mno]
+                delList.append(mno)
+
+        delList.reverse()
+        for mno in delList:
+            del self.__faceData[mno]
 
         # 메모리에 존재하지 않는 멤버 데이터 추가 
         for member in members:

@@ -22,7 +22,7 @@ class MySQL:
     def getConnection(self):
         return pymysql.connect(
                         user = self.__user, 
-                        port = 30000,
+                        port = 3306,
                         passwd = self.__passwd,
                         host = self.__host,
                         db = self.__db,
@@ -32,7 +32,7 @@ class MySQL:
         if self.__conn is None:
             self.__conn = pymysql.connect(
                             user = self.__user, 
-                            port = 30000,                
+                            port = 3306,                
                             passwd = self.__passwd,
                             host = self.__host,
                             db = self.__db,

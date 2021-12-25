@@ -41,8 +41,14 @@ def match():
         landmark = ft.feature(face)
 
         data, distance = ft.match(landmark)
-        print(f"distance: {distance}")
+        if distance == False:
+            result.append(False) # masked
+            result.append("none") # name
+            result.append(False) # display
+            return {'data': result}, 200
 
+        print(f"distance: {distance}")
+        print(">>>>",state)
         name = data["name"]
         mno = data["mno"]
 
@@ -60,7 +66,7 @@ def match():
             else:
                 checkStack[f'{fNum}{state}'] = {"val": 1, "mno": mno}
 
-        if checkStack.get(f'{fNum}{state}') is not None and checkStack[f'{fNum}{state}']["val"] >= 3:
+        if checkStack.get(f'{fNum}{state}') is not None and checkStack[f'{fNum}{state}']["val"] >= 2:
             del checkStack[f'{fNum}{state}']
             result.append(True) # display
             checklist: MemberDict = Checklist.instance()
